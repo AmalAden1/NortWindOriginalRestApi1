@@ -58,7 +58,7 @@ namespace NortWindOriginalRestApi1.Controllers
             /// muista tarkistaa connection string "esim. tietokannan nimi" -- jos haluat nähdä virhee niin muista muuttaa tietokanta 
             
         }
-
+        // uuden asiakkaan lisääminen 
         [HttpPost]
 
         public ActionResult Addnew([FromBody] Customer customer)
@@ -74,6 +74,31 @@ namespace NortWindOriginalRestApi1.Controllers
             {
                 return BadRequest("Tapahtui virhe. Lue Lisää: " + ex.InnerException);
             }
+        }
+        // Asiakkaan poistaminen
+
+
+        [HttpDelete("{id}")]
+
+        public ActionResult Delete(string id) 
+        {
+            try
+            {
+                var asiakas = db.Customers.Find(id);
+                if (asiakas != null) // Jos idl:llä löydetään asiakas
+                {
+                    db.Customers.Remove(asiakas);
+                    db.SaveChanges();
+                    return Ok("asiakas" + asiakas.CompanyName + "poistettiin.");
+                }
+                return NotFound("Asiakasta id:llä " + id + "ei löydy");
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.InnerException);
+
+            }
+        
         }
 
     }
