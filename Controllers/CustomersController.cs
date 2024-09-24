@@ -31,22 +31,49 @@ namespace NortWindOriginalRestApi1.Controllers
 
 
 
-        //luodaa metodi get määritellyllä ID  joka Hakee kaikki asiakkaat
+        //luodaa metodi get määritellyllä  ID  joka Hakee kaikki asiakkaat id eli pääavaimella
         [HttpGet("{id}")]
        
         public ActionResult GetOneCustomersById(string id)
         {
-            var asiakas = db.Customers.Find(id);
-            if (asiakas != null ) 
-            { 
-                return Ok(asiakas);
-            }
-            else
+            try
             {
-                //return BadRequest("Asikasta id:llä " + "ei löydy");
-                return BadRequest($"Asiakasta id:llä {id } ei löydy");// string interpolation
+                var asiakas = db.Customers.Find(id);
+                if (asiakas != null)
+                {
+                    return Ok(asiakas);
+                }
+                else
+                {
+                    //return BadRequest("Asikasta id:llä " + "ei löydy");
+                    return NotFound($"Asiakasta id:llä {id} ei löydy");// string interpolation
+                }
             }
+            catch (Exception ex) 
+            {
+                return BadRequest("Tapahtui Virhe. Lue Lisää:" + ex.InnerException);
+
             
+            }
+            /// muista tarkistaa connection string "esim. tietokannan nimi" -- jos haluat nähdä virhee niin muista muuttaa tietokanta 
+            
+        }
+
+        [HttpPost]
+
+        public ActionResult Addnew([FromBody] Customer customer)
+        {
+            try
+            {
+                db.Customers.Add(customer);
+                db.SaveChanges();
+                return Ok($"Lisäättiin uusi asiakas{customer.CompanyName} from {customer.City}");
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Tapahtui virhe. Lue Lisää: " + ex.InnerException);
+            }
         }
 
     }
